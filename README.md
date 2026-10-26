@@ -53,7 +53,7 @@ taskflow-kanban/
 
 ## 📋 Prerequisites & Required Software
 
-Make sure you have the following installed on your computer:
+Make sure you have the following in stalled on your computer:
 
 1. **Node.js** (v18.x or higher) – [Download Node.js](https://nodejs.org/)
 2. **npm** (bundled with Node.js, v9.x or higher)

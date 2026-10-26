@@ -1,0 +1,23 @@
+{
+  "name": "taskflow-kanban",
+  "version": "1.0.0",
+  "description": "TaskFlow – Modern Task Manager with Kanban Board (Full Stack MERN/MEN)",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "seed": "node backend/seed.js",
+    "test": "node backend/test-api.js",
+    "install:backend": "cd backend && npm install"
+  },
+  "keywords": [
+    "taskflow",
+    "kanban",
+    "mongodb",
+    "express",
+    "fullstack",
+    "fsd"
+  ],
+  "author": "TaskFlow Developer",
+  "license": "ISC"
+}

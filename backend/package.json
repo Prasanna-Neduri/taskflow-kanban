@@ -1,0 +1,30 @@
+{
+  "name": "taskflow-backend",
+  "version": "1.0.0",
+  "description": "Full-stack Task Manager with Kanban Board - Backend REST API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node seed.js",
+    "test": "node test-api.js"
+  },
+  "keywords": [
+    "taskflow",
+    "kanban",
+    "mongodb",
+    "express",
+    "nodejs",
+    "mongoose",
+    "rest-api"
+  ],
+  "author": "TaskFlow Developer",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4",
+    "morgan": "^1.10.0"
+  }
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow – Task Manager with Kanban Board</title>
+  <meta name="description" content="A professional full-stack task management dashboard with Kanban drag-and-drop board, MongoDB Atlas, and Express REST API.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout">
+    
+    <!-- Mobile Header Bar -->
+    <header class="mobile-topbar">
+      <button id="mobileMenuBtn" class="icon-btn" aria-label="Toggle Navigation Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <div class="brand">
+        <span class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+            <line x1="15" y1="3" x2="15" y2="21"></line>
+          </svg>
+        </span>
+        <span class="brand-title">TaskFlow</span>
+      </div>
+      <button id="quickAddBtnMobile" class="btn btn-primary btn-sm" aria-label="Quick Add Task">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+    </header>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+              <line x1="15" y1="3" x2="15" y2="21"></line>
+            </svg>
+          </span>
+          <div>
+            <span class="brand-title">TaskFlow</span>
+            <span class="brand-sub">Kanban Manager</span>
+          </div>
+        </div>
+        <button id="closeSidebarBtn" class="icon-btn mobile-only" aria-label="Close menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="sidebarAddTaskBtn" class="btn btn-primary btn-block">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>New Task</span>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">VIEWS</div>
+        <ul class="nav-links">
+          <li>
+            <a href="#kanban" class="nav-link active" data-filter-status="all">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+              <span>Kanban Board</span>
+              <span id="navTotalBadge" class="nav-badge">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="nav-section-label">QUICK FILTERS</div>
+        <ul class="nav-links">
+          <li>
+            <button class="nav-link-btn" data-preset="all">
+              <span class="status-indicator-dot dot-all"></span>
+              <span>All Tasks</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link-btn" data-preset="high-priority">
+              <span class="status-indicator-dot dot-high"></span>
+              <span>High Priority</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link-btn" data-preset="overdue">
+              <span class="status-indicator-dot dot-overdue"></span>
+              <span>Overdue Tasks</span>
+              <span id="navOverdueBadge" class="nav-badge badge-danger">0</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <!-- Database Connection Status Badge -->
+        <div id="dbStatusBadge" class="db-status-pill checking" title="Checking database connectivity...">
+          <span class="db-indicator-dot"></span>
+          <span id="dbStatusText">Checking MongoDB...</span>
+        </div>
+
+        <div class="seed-actions">
+          <button id="loadSampleDataBtn" class="btn btn-outline btn-sm btn-block" title="Populate board with 6 realistic sample tasks">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Load Sample Tasks</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      
+      <!-- Top Bar / Header Controls -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Project Board</h1>
+          <p class="page-subtitle">Track, organize, and streamline your team workflow</p>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Live Search Bar -->
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="searchInput" placeholder="Search tasks by title or details..." autocomplete="off">
+            <button id="clearSearchBtn" class="clear-search-btn hidden" aria-label="Clear search">✕</button>
+          </div>
+
+          <!-- Priority Filter -->
+          <div class="filter-group">
+            <label for="priorityFilter" class="sr-only">Priority Filter</label>
+            <select id="priorityFilter" class="select-control">
+              <option value="all">All Priorities</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div class="filter-group">
+            <label for="statusFilter" class="sr-only">Status Filter</label>
+            <select id="statusFilter" class="select-control">
+              <option value="all">All Statuses</option>
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+
+          <!-- Primary Add Task CTA -->
+          <button id="openCreateModalBtn" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Add Task</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Database Warning Banner (hidden if connected) -->
+      <div id="dbAlertBanner" class="alert-banner alert-warning hidden" role="alert">
+        <div class="alert-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div class="alert-body">
+          <strong>MongoDB is not connected!</strong>
+          <span id="dbAlertMessage">Please configure your MONGODB_URI in backend/.env to persist tasks in MongoDB Atlas.</span>
+        </div>
+      </div>
+
+      <!-- Dashboard Overview Metrics -->
+      <section class="metrics-grid" aria-label="Dashboard Overview">
+        <div class="metric-card card-total">
+          <div class="metric-header">
+            <span class="metric-label">Total Tasks</span>
+            <span class="metric-icon icon-blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </span>
+          </div>
+          <div class="metric-value" id="metricTotal">0</div>
+          <div class="metric-progress-wrapper">
+            <div class="metric-progress-label">
+              <span>Completion Rate</span>
+              <span id="metricProgressPercent">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="metricProgressBar" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card card-todo">
+          <div class="metric-header">
+            <span class="metric-label">To Do</span>
+            <span class="metric-icon icon-slate">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+          </div>
+          <div class="metric-value" id="metricTodo">0</div>
+          <div class="metric-subtext">Waiting to be started</div>
+        </div>
+
+        <div class="metric-card card-inprogress">
+          <div class="metric-header">
+            <span class="metric-label">In Progress</span>
+            <span class="metric-icon icon-amber">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
+            </span>
+          </div>
+          <div class="metric-value" id="metricInProgress">0</div>
+          <div class="metric-subtext">Currently being worked on</div>
+        </div>
+
+        <div class="metric-card card-done">
+          <div class="metric-header">
+            <span class="metric-label">Done</span>
+            <span class="metric-icon icon-emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </span>
+          </div>
+          <div class="metric-value" id="metricDone">0</div>
+          <div class="metric-subtext">Successfully finished</div>
+        </div>
+
+        <div class="metric-card card-overdue" id="metricOverdueCard">
+          <div class="metric-header">
+            <span class="metric-label">Overdue</span>
+            <span class="metric-icon icon-rose">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </span>
+          </div>
+          <div class="metric-value" id="metricOverdue">0</div>
+          <div class="metric-subtext" id="metricOverdueSubtext">No overdue tasks</div>
+        </div>
+      </section>
+
+      <!-- Active Filters Pill Bar -->
+      <div id="filterPillContainer" class="filter-pill-container hidden">
+        <span class="filter-pill-label">Filtered by:</span>
+        <div id="activeFilterPills" class="active-filter-pills"></div>
+        <button id="resetAllFiltersBtn" class="btn-text">Reset Filters</button>
+      </div>
+
+      <!-- Kanban Board Section -->
+      <section class="kanban-container" aria-label="Kanban Board">
+        
+        <!-- Column 1: To Do -->
+        <div class="kanban-column" id="col-todo" data-status="todo">
+          <div class="column-header">
+            <div class="col-title-group">
+              <span class="col-indicator col-indicator-todo"></span>
+              <h2 class="col-title">To Do</h2>
+              <span id="colCountTodo" class="col-count">0</span>
+            </div>
+            <button class="col-add-btn" data-add-to="todo" title="Add task to To Do">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+          <div class="tasks-dropzone" id="tasks-todo" data-status="todo">
+            <!-- Loading Skeleton -->
+            <div class="task-card-skeleton"></div>
+          </div>
+        </div>
+
+        <!-- Column 2: In Progress -->
+        <div class="kanban-column" id="col-in-progress" data-status="in-progress">
+          <div class="column-header">
+            <div class="col-title-group">
+              <span class="col-indicator col-indicator-inprogress"></span>
+              <h2 class="col-title">In Progress</h2>
+              <span id="colCountInProgress" class="col-count">0</span>
+            </div>
+            <button class="col-add-btn" data-add-to="in-progress" title="Add task to In Progress">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+          <div class="tasks-dropzone" id="tasks-in-progress" data-status="in-progress">
+            <div class="task-card-skeleton"></div>
+          </div>
+        </div>
+
+        <!-- Column 3: Done -->
+        <div class="kanban-column" id="col-done" data-status="done">
+          <div class="column-header">
+            <div class="col-title-group">
+              <span class="col-indicator col-indicator-done"></span>
+              <h2 class="col-title">Done</h2>
+              <span id="colCountDone" class="col-count">0</span>
+            </div>
+            <button class="col-add-btn" data-add-to="done" title="Add task to Done">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+          <div class="tasks-dropzone" id="tasks-done" data-status="done">
+            <div class="task-card-skeleton"></div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Add / Edit Task -->
+  <div id="taskModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">Create New Task</h3>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="taskForm" novalidate>
+        <input type="hidden" id="taskIdInput">
+
+        <div class="form-group">
+          <label for="taskTitleInput" class="form-label">
+            Task Title <span class="required-star">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="taskTitleInput" 
+            class="form-control" 
+            placeholder="e.g. Design wireframes for homepage" 
+            maxlength="120" 
+            required
+            autocomplete="off"
+          >
+          <div class="form-feedback" id="titleFeedback"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="taskDescInput" class="form-label">Description</label>
+          <textarea 
+            id="taskDescInput" 
+            class="form-control" 
+            rows="3" 
+            placeholder="Add relevant notes, checklist, or acceptance criteria..."
+            maxlength="1000"
+          ></textarea>
+          <div class="char-counter"><span id="descCharCount">0</span>/1000</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label for="taskStatusInput" class="form-label">Status</label>
+            <select id="taskStatusInput" class="form-control">
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label for="taskPriorityInput" class="form-label">Priority</label>
+            <select id="taskPriorityInput" class="form-control">
+              <option value="low">Low Priority</option>
+              <option value="medium" selected>Medium Priority</option>
+              <option value="high">High Priority</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="taskDueDateInput" class="form-label">Due Date (Optional)</label>
+          <input 
+            type="date" 
+            id="taskDueDateInput" 
+            class="form-control"
+          >
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelModalBtn" class="btn btn-outline">Cancel</button>
+          <button type="submit" id="submitTaskBtn" class="btn btn-primary">
+            <span id="submitBtnSpinner" class="btn-spinner hidden"></span>
+            <span id="submitBtnText">Create Task</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirmation -->
+  <div id="deleteModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal-card modal-confirm">
+      <div class="confirm-icon-box">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+      </div>
+      <h3 id="deleteModalTitle" class="confirm-title">Delete Task?</h3>
+      <p class="confirm-message">
+        Are you sure you want to permanently delete <strong id="deleteTaskTitle"></strong>? This action will remove it from MongoDB.
+      </p>
+      <div class="modal-footer">
+        <button type="button" id="cancelDeleteBtn" class="btn btn-outline">Cancel</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+          <span id="deleteBtnSpinner" class="btn-spinner hidden"></span>
+          <span>Delete Task</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -19,3 +19,9 @@ Thumbs.db
 # Archives
 *.zip
 *.tar.gz
+
+node_modules/
+.env
+.env.*
+!.env.example
+config.env
